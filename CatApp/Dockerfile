@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y curl gnupg \
     && ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev \
     && echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
 
+ 
+
 # Set the user to root
 USER root
 #USER $APP_UID
@@ -46,6 +48,11 @@ RUN dotnet publish "./CatApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:
 # This stage is used in production or when running from VS in regular mode
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final
 WORKDIR /app
+
+
+# Install dos2unix  <-------------- IMPORTANT FOR CHANGING (CRLF → LF) for entrypoint.sh  cause it fails silently  !!!!
+RUN apt-get update && apt-get install -y dos2unix
+
 # Copy published files
 COPY --from=publish /app/publish .
 # Copy source files for EF Core commands
@@ -63,6 +70,12 @@ EXPOSE 80
 #EXPOSE 8081
 
 # Copy entrypoint script
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+# Entrypoint of the script must be in the solution root folder
+RUN echo "copying critical  start up file --> entrypoint.sh"
+COPY ../entrypoint.sh /app/entrypoint.sh
+
+# IMPORTANT - IMPORTANT - IMPORTANT (CRLF → LF) or the app not starts at all !!!
+RUN echo "Ensure  entrypoint.sh  -- is LF -- NOT -- CRLF"
+RUN dos2unix /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
 ENTRYPOINT ["/app/entrypoint.sh"]
