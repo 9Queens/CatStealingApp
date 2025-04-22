@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CatApp.Shared": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

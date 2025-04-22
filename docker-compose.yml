@@ -1,0 +1,46 @@
+services:
+  catapp-api:
+    image: catapp-api
+    build:
+      context: .  # Root folder of CatApp project
+      dockerfile: CatApp/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MewDb;User=sa;Password=AnotherStrongPassword123;TrustServerCertificate=True;MultipleActiveResultSets=false;
+    #depends_on:
+    #  sqlserver:
+    #    condition: service_healthy
+    ports:
+      - "5000:80"
+      - "5001:443"
+  
+      
+    networks:
+      - mynetwork
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=AnotherStrongPassword123
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - mynetwork
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P AnotherStrongPassword123 -Q "SELECT 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  sqlserver-data:
+    driver: local
+
+networks:
+  mynetwork:
+    driver: bridge
