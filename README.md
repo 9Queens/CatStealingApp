@@ -63,7 +63,8 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
 
 - `Dockerfile` inside the Web API project
 - `docker-compose.yml` in the root
-- `entrypoint.sh` in the root
+- `entrypoint.sh` in the root <---- also tools to ensure that the file format will be preserved in LF (otherwise app will never start) !!!!
+-  mssql-tools < --- to help you perform SQL queries and see the data live while hitting the API
 
 
 ## Getting Started
@@ -96,7 +97,47 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
 	
 	
 
+To test the app using docker :
 
-You can run set up the dockerized solution with :
+
+1) Navigate to the root folder of the solution to build and run the dockerized solution using :
+
 ```bash
 docker-compose up --build
+
+2) After successfully build and run in docker you can visit 
+-  http://localhost:5000/swagger/index.html 
+
+3) Try placing at the same time as much cat stealing operations as you want:
+   api/cats/fetch    
+
+
+4) To display the cocncurrent batches live... Open a powershell and type:
+
+ >>sqlcmd -S localhost,1433 -U sa -P AnotherStrongPassword123 -d MewDb -Q "SELECT * FROM CatDownloadProgresses"
+
+ Output :
+
+Id                                   TotalCats   CatsDownloaded DoublicatesOccured ErrorsOccured StartedOn                                     CompletedOn                                   BatchFailures Status      Messages
+------------------------------------ ----------- -------------- ------------------ ------------- --------------------------------------------- --------------------------------------------- ------------- ----------- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+85A20A20-0D8A-4FD7-874B-150D8C282CAE           4              4                  0             0            2025-04-22 23:09:02.4692547 +00:00            2025-04-22 23:09:07.8977878 +00:00          NULL           0
+[Success] 4 / 4 cats aquired!!  Job completed successfully for batch 85a20a20-0d8a-4fd7-874b-150d8c282cae at 04/22/2025 23:09:07 +00:00
+
+FB1537E6-1002-412E-8F58-4952470CA902          10              0                  0             0            2025-04-22 23:01:27.5066667 +00:00                                          NULL             0           0 test
+936EEDDC-884C-4DF1-AC58-7ADCCD0A2A46          25             25                  3             0            2025-04-22 23:10:03.7189278 +00:00            2025-04-22 23:10:43.2820748 +00:00          NULL           0
+[Success] 25 / 25 cats aquired!!  Job completed successfully for batch 936eeddc-884c-4df1-ac58-7adccd0a2a46 at 04/22/2025 23:10:43 +00:00
+
+9A2BAF59-3D60-40BC-AFF2-ADF99F6E9B45          20             20                  0             0            2025-04-22 23:09:00.4507174 +00:00            2025-04-22 23:09:32.2432449 +00:00          NULL           0
+[Success] 20 / 20 cats aquired!!  Job completed successfully for batch 9a2baf59-3d60-40bc-aff2-adf99f6e9b45 at 04/22/2025 23:09:32 +00:00
+
+F32D3E83-0979-47D5-B6B4-C52539BF5E19          20             20                  0             0            2025-04-22 23:08:57.9739198 +00:00            2025-04-22 23:09:30.2900406 +00:00          NULL           0
+[Success] 20 / 20 cats aquired!!  Job completed successfully for batch f32d3e83-0979-47d5-b6b4-c52539bf5e19 at 04/22/2025 23:09:30 +00:00
+
+BB87700A-C0D9-404A-B43F-DCB51CD15E16          65             65                 11             0            2025-04-22 23:09:05.8125968 +00:00            2025-04-22 23:10:43.0571447 +00:00          NULL           0
+[Success] 65 / 65 cats aquired!!  Job completed successfully for batch bb87700a-c0d9-404a-b43f-dcb51cd15e16 at 04/22/2025 23:10:43 +00:00
+
+7862FB19-B3FF-43AD-80EA-E215A50CDE78           5              5                  0             0            2025-04-22 23:10:00.2543490 +00:00            2025-04-22 23:10:11.3414001 +00:00          NULL           0
+[Success] 5 / 5 cats aquired!!  Job completed successfully for batch 7862fb19-b3ff-43ad-80ea-e215a50cde78 at 04/22/2025 23:10:11 +00:00
+
+
+
