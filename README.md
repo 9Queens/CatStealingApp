@@ -98,10 +98,7 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
 	
 
 To test the app using docker :
-
-
-1) Navigate to the root folder of the solution to build and run the dockerized solution using :
-
+1) Navigate to the root folder of the solution to build and run the dockerized solution using powershell
 ```bash
 docker-compose up --build
 
@@ -112,7 +109,15 @@ docker-compose up --build
    api/cats/fetch    
 
 
-4) To display the cocncurrent batches live... Open a powershell and type:
+4) To display the cocncurrent batches live ...
+
+ try the following swagger endpoints
+  - api/cats/jobs/active
+  - api/cats/jobs/completed
+
+ OR directly from withing the container with pre installed mssql-tools using powershell
+
+ Open a powershell and type:
 
  >>sqlcmd -S localhost,1433 -U sa -P AnotherStrongPassword123 -d MewDb -Q "SELECT * FROM CatDownloadProgresses"
 
