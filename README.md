@@ -8,24 +8,24 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
   from a third-party cat farm. It allows real-time monitoring of job status and searching acquired cats
   via tag names, serving them in a paginated way to callers.
   
-- The solution offers a stealing approach that is steady as a rock and error-proof as hell. NO MATTER HOW MANY
-  batches you place at the same time (I dare you to place thousands), this thing will continue to steal cats
-  no matter what.
+- The solution offers a cat stealing approach that is steady as a rock and error-proof as hell. Combining hangfire's
+  retry policy attributes for isolated cat downloads and for the batches + my custom numbers from settings
+  (IOptions). NO MATTER HOW MANY batches you will place at the same time (I dare you to place thousands),
+  this thing will continue to steal cats as your resources allow - no matter what.
 
 - A faster approach exists in comments that uses parallelism, but I haven’t finalized it yet… it’s like 'light' speed fast
-  but loses cats (future update).
+  but loses cats. I think i need semaphores there... (future update).
 
-- Each batch has its own mechanism for tracking duplicate download attempts (I use hashes of the byte arrays), failures,
-  or other errors for the entire operation (batch). Hangfire filters are used to capture the start and end of each batch operation
-  and simultaneously append messages for failures, successes, and statistics about captured cats.
-
-
+- Each batch has its own mechanism for tracking duplicate download attempts (I use hashes of the byte arrays to ensure uniquness).
+  failures network failures , or other errors for the entire operation (batch). Hangfire filters are used to capture the
+  start and end of each batch operation and simultaneously append messages for failures, successes, and statistics about captured cats.
+  
 - I still have some comments here and there intentionally, for you to better understand my approach.
   I decided not to go hardcore and create a separate table for each download item — I kept it simple but
   included all required download statistics.
-  You can also watch the console as I use basic logging.
+  You can also watch the console as i make use of basic logging.
 
-- The dockerized solution is in [ debug ], NOT release (keep that in mind).
+- The dockerized solution is in [ debug ] mode, NOT release (keep that in mind).
   You can, of course, change the Docker scripts — feel free.
 
   Actual endpoints of the CatApp:
@@ -40,11 +40,10 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
   
  	- GET /api/cat/jobs/{batchId}
 
-
-        Extra endpoints :
-
-	-  GET /api/cat/jobs/active    ( for monitoring concurrent stealing operations in real time )
-	-  GET /api/cat/jobs/completed ( to display completed operations )
+  Extra endpoints :
+    
+	- GET /api/cat/jobs/active    ( for monitoring concurrent stealing operations in real time )
+	- GET /api/cat/jobs/completed ( to display completed operations )
 
 
 
@@ -62,7 +61,7 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
 ## Docker Support
 
 - `Dockerfile` inside the Web API project
-- `docker-compose.yml` in the root
+- `docker-compose.yml` in the root folder of the solution
 - `entrypoint.sh` in the root <---- also tools to ensure that the file format will be preserved in LF (otherwise app will never start) !!!!
 -  mssql-tools < --- to help you perform SQL queries and see the data live while hitting the API
 
@@ -103,15 +102,16 @@ To test the app using docker :
 docker-compose up --build
 
 2) After successfully build and run in docker you can visit 
--  http://localhost:5000/swagger/index.html 
+  - http://localhost:5000/swagger/index.html 
 
 3) Try placing at the same time as much cat stealing operations as you want:
-   api/cats/fetch    
+  - api/cats/fetch    
 
 
 4) To display the cocncurrent batches live ...
 
  try the following swagger endpoints
+
   - api/cats/jobs/active
   - api/cats/jobs/completed
 
