@@ -1,6 +1,7 @@
 #  CatStealingApp
 
-A .NET 8 Web API solution for downloading, tagging, and managing cats — complete with Docker support and integration tests.
+A .NET 8 Web API solution for downloading, tagging, and previewing cats and cat stealing operations
+— complete with Docker support and integration tests.
 
 ## What this app does
 
@@ -16,8 +17,8 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
 - A faster approach exists in comments that uses parallelism, but I haven’t finalized it yet… it’s like 'light' speed fast
   but loses cats. I think i need semaphores there... (future update).
 
-- Each batch has its own mechanism for tracking duplicate download attempts (I use hashes of the byte arrays to ensure uniquness).
-  failures network failures , or other errors for the entire operation (batch). Hangfire filters are used to capture the
+- Each batch has its own mechanism for tracking duplicate download attempts (I use hashes of the byte arrays to ensure uniquness),
+  general failures, network failures , or other errors for the entire operation (batch). Hangfire filters are used to capture the
   start and end of each batch operation and simultaneously append messages for failures, successes, and statistics about captured cats.
   
 - I still have some comments here and there intentionally, for you to better understand my approach.
@@ -26,7 +27,7 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
   You can also watch the console as i make use of basic logging.
 
 - The dockerized solution is in [ debug ] mode, NOT release (keep that in mind).
-  You can, of course, change the Docker scripts — feel free.
+  You can of course, change the Docker scripts — feel free.
 
   Actual endpoints of the CatApp:
 
@@ -46,9 +47,7 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
 	- GET /api/cat/jobs/completed ( to display completed operations )
 
 
-
-
-## Projects
+## Projects included in the solution
 
 - `CatApp.Shared` – Shared entities, helpers, migrations , local API responses, remote api responses, Dtos
    helpers and files that helps us created dbcontexts do be testable and datarace proof.
@@ -63,7 +62,7 @@ A .NET 8 Web API solution for downloading, tagging, and managing cats — comple
 - `Dockerfile` inside the Web API project
 - `docker-compose.yml` in the root folder of the solution
 - `entrypoint.sh` in the root <---- also tools to ensure that the file format will be preserved in LF (otherwise app will never start) !!!!
--  mssql-tools < --- to help you perform SQL queries and see the data live while hitting the API
+-  mssql-tools < --- to help you perform SQL queries and see the data live while hitting the API directly from the container
 
 
 ## Getting Started
