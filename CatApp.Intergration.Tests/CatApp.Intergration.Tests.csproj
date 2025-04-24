@@ -14,13 +14,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!--our actual test project for the intergration-->
+		<!-- IMPORTANT TO BE HERE  - our actual test project for the intergration-->
 		<ProjectReference Include="..\CatApp\CatApp.csproj" />
 	</ItemGroup>
 
+	<!--IMPORTANT TO BE HERE  - our actual test project for the intergration-->
+	<!--Where all settings for the docker or test in general exist-->
+	<ItemGroup>
+		<None Update="appsettings.test.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="coverlet.collector" Version="6.0.2" />
+		<PackageReference Include="DotNet.Testcontainers" Version="1.7.0-beta.2269" />
 		<PackageReference Include="FluentAssertions" Version="8.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.4" />
@@ -38,6 +46,10 @@
 
 	<ItemGroup>
 		<Using Include="Xunit" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="DockerCompose\" />
 	</ItemGroup>
 
 </Project>

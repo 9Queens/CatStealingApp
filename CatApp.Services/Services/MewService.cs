@@ -58,6 +58,7 @@ namespace CatApp.Services
             return new ScheduledJobResult
             {
                 Success = true,
+                JobId =batchId,
                 Message = $"Download of {count} cats scheduled. Track progress using batch ID: {batchId}"
             };
         }

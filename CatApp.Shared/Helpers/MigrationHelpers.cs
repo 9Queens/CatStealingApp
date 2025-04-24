@@ -23,20 +23,36 @@ namespace CatApp.Shared.Helpers
                 CreateNoWindow = true
             };
 
-            using var process = new Process { StartInfo = processStartInfo };
-            process.Start();
+            using var proc = new Process { StartInfo = processStartInfo, EnableRaisingEvents = true };
 
-            string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadToEndAsync();
+            var stdOut = string.Empty;
 
-            await process.WaitForExitAsync();
-
-            if (process.ExitCode != 0)
+            proc.OutputDataReceived += (_, e) =>
             {
-                throw new Exception($"Command failed with exit code {process.ExitCode}: {error}");
-            }
+                if (e.Data is not null)
+                {
+                    Console.WriteLine(e.Data);      // live stream to VS Output→Tests
+                    stdOut += e.Data + Environment.NewLine;
+                }
+            };
 
-            return output;
+            proc.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data is not null)
+                    Console.WriteLine(e.Data);      // stream stderr too
+            };
+
+            proc.Start();
+            proc.BeginOutputReadLine();
+            proc.BeginErrorReadLine();
+
+            await proc.WaitForExitAsync();
+
+            if (proc.ExitCode != 0)
+                throw new InvalidOperationException(
+                    $"{fileName} {arguments} exited with code {proc.ExitCode}");
+
+            return stdOut;
         }
     }
 }
