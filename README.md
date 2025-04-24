@@ -53,9 +53,13 @@ A .NET 8 Web API solution for downloading, tagging, and previewing cats and cat 
    helpers and files that helps us created dbcontexts do be testable and datarace proof.
 - `CatApp.Services` – Business logic and services
 - `CatApp` – Web API project with Dockerfile
-- `CatApp.Integration.Tests` – Integration tests using WebApplicationFactory
-   (just a sample of full intergration tests examples for only one api endpoint using in memory test databases and
-    and one full unit test only in one service  - not all )
+- `CatApp.Integration.Tests` – with the following :
+   -  Full Integration tests for only one endpoint  by tearing up/down
+      docker container just to server for the intergration test cases. Docker settings for general test behavior
+      and tracking automatically the docker-compose.yaml file (in case the hardcoded path cannot get resolved).
+   -  Docker output added to visual studio Test Explorer for collecting errors before and during tests. 
+   -  The same - api endpoint test - using in memory test databases (no docker just locally)
+   -  One full unit test only in one service (ICatService)
 
 ## Docker Support
 
